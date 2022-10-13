@@ -1,23 +1,25 @@
 # 主文件入口
 
-from typing import Union, Optional
-import asyncio
-import time
-
 from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
+
+from .admin.router import admin
+
 
 app = FastAPI()
 
 
-@app.get("/")
-async def index():
-    await asyncio.sleep(3)
-    # time.sleep(3)
-    return {"returnCode": 200}
+app.include_router(admin)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 
-@app.get("/items/{item_id}")
-async def item(item_id: int, q: Optional[str] = None):
-    return {"item": [{"name": "food"}], "query": q}
-
+if __name__ == '__main__':
+    import uvicorn
+    uvicorn.run(app=app, host="127.0.0.1", port=8000, workers=1)
