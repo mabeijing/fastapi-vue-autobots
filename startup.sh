@@ -1,0 +1,3 @@
+pwd = `pwd`
+
+echo $pwd
