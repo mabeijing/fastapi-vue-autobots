@@ -3,13 +3,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .admin.router import admin
+from .demo.router import demo
 
 
-app = FastAPI()
+app = FastAPI(title='fastapi-vue-autobots',description='this is a demo for fastapi!', version='v0.0.1')
 
 
-app.include_router(admin)
+app.include_router(demo)
 
 app.add_middleware(
     CORSMiddleware,
