@@ -1,19 +1,31 @@
 # 模块路由文件
 
+from enum import Enum
 from typing import Optional, Set, TYPE_CHECKING
 from datetime import datetime, date, time
 from decimal import Decimal
+from urllib import request
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, EmailStr, Field, HttpUrl
 
-from fastapi import APIRouter, Body, Path, params, Response
+from fastapi import APIRouter, Body, Path, Request, params, Response, Depends, WebSocket
 
-# from fastapi.responses import JSONResponse
+# from fastapi.responses import JSONResponse   json是python实现的json解析，性能不高。
+# from fastapi.responses import UJSONResponse  ujson是c实现的高性能json解析，但是解析有边缘影响。
+# from fastapi.responses import ORJSONResponse  orjson是rust实现的高性能json，目前没啥问题。
+# from fastapi.responses import HTMLResponse    用于返回html
+# from fastapi.responses import PlainTextResponse   用于返回纯文本或者字节
+# from fastapi.responses import RedirectResponse    用于重定向路由
+# from fastapi.responses import StreamingResponse   用于异步生成器/迭代器，流式传输响应主体。注意，这个插件也可以异步读取文件，异步读取文件库aiofile
+# from fastapi.responses import FileResponse  这个支持异步传输文件作为响应
+from fastapi.templating import Jinja2Templates    # 需要安装jinja2, 配合HTMLResponse使用
+
 from starlette.responses import JSONResponse
+from fastapi.responses import ORJSONResponse, HTMLResponse
 
+templates = Jinja2Templates(directory="templates")
 
-from enum import Enum
 
 demo = APIRouter()
 
@@ -62,7 +74,7 @@ class ProductType(str, Enum):
     perforce = 'Perfore'
 
 
-@demo.post("/order/{order_id:path}")
+@demo.post("/order/{order_id:path}", response_class=ORJSONResponse)
 def order(order_id: str, user: dict[str, User], delete: bool, product_type: ProductType, limit: int = 10):
     """
     1.支持有类型的路径参数 order_id: str\n
@@ -78,7 +90,13 @@ def order(order_id: str, user: dict[str, User], delete: bool, product_type: Prod
 
 @demo.get("/usrs/self", tags=['测试用例'], summary='查询当前用户')
 async def user_self():
-    return "hello world"
+
+    return HTMLResponse(content="ORJSONResponse", status_code=404, media_type="text/html")
+
+
+@demo.get("/home")
+def home(request: Request):
+    templates.TemplateResponse("home.html", {"request": request})
 
 
 @demo.get("/users/{user_id}")
@@ -134,3 +152,73 @@ def item_limit(item: str, limit: Optional[int] = None):
     路由支持 可选参数limit
     """
     return {"item": item, "limit": limit}
+
+
+def welcome():
+    """
+    返回html内容
+    """
+    return """
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chat</title>
+    </head>
+    <body>
+        <h1>WebSocket Chat</h1>
+        <form action="" onsubmit="sendMessage(event)">
+            <input type="text" id="messageText" autocomplete="off"/>
+            <button>Send</button>
+        </form>
+        <ul id='messages'>
+        </ul>
+        <script>
+            var ws = new WebSocket("ws://localhost:8000/ws");
+            ws.onmessage = function(event) {
+                var messages = document.getElementById('messages')
+                var message = document.createElement('li')
+                var content = document.createTextNode(event.data)
+                message.appendChild(content)
+                messages.appendChild(message)
+            };
+            function sendMessage(event) {
+                var input = document.getElementById("messageText")
+                ws.send(input.value)
+                input.value = ''
+                event.preventDefault()
+            }
+        </script>
+    </body>
+</html>
+"""
+
+
+demo.get("/", response_class=HTMLResponse)(welcome)
+
+@demo.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    while True:
+        data = await websocket.receive_text()
+        await websocket.send_text(f"Message text was: {data}")
+
+class FixedContentQueryChecker:
+    def __init__(self, fixed_content: str):
+        self.fixed_content = fixed_content
+
+    def __call__(self, q: str = ""):
+        if q:
+            print(q)
+            return self.fixed_content in q
+        return False
+
+
+checker = FixedContentQueryChecker("bar")
+
+
+@demo.get("/query-checker/")
+async def read_query_check(fixed_content_included: bool = Depends(checker)):
+    return {"fixed_content_in_query": fixed_content_included}
+
+
+
