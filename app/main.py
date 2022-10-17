@@ -11,6 +11,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 
 from .demo.router import demo
 from .demo._requests_base import req_base
+from .demo._request_adv import req_adv
 
 import strawberry
 # from strawberry.fastapi import GraphQLRouter
@@ -55,6 +56,7 @@ app = FastAPI(title='fastapi-vue-autobots',
 # app.add_websocket_route("/graphql", graphql_app)
 app.include_router(demo)
 app.include_router(req_base)
+app.include_router(req_adv)
 
 app.add_middleware(
     CORSMiddleware,
