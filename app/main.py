@@ -10,14 +10,29 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 
 from .demo.router import demo
+from .demo._requests_base import req_base
 
 import strawberry
 # from strawberry.fastapi import GraphQLRouter
 from strawberry.asgi import GraphQL
 
+descriptions = """
+ChimichangApp API helps you do awesome stuff. 🚀
+
+## Items
+
+You can **read items**.
+
+## Users
+
+You will be able to:
+
+* **Create users** (_not implemented_).
+* **Read users** (_not implemented_).
+"""
 
 app = FastAPI(title='fastapi-vue-autobots',
-              description='this is a demo for fastapi!', version='v0.0.1')
+              description=descriptions, version='v0.0.1')
 
 
 # @strawberry.type
@@ -39,6 +54,7 @@ app = FastAPI(title='fastapi-vue-autobots',
 # app.add_route("/graphql", graphql_app)
 # app.add_websocket_route("/graphql", graphql_app)
 app.include_router(demo)
+app.include_router(req_base)
 
 app.add_middleware(
     CORSMiddleware,
