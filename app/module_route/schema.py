@@ -1,25 +1,20 @@
 from sqlalchemy import Column, Integer, String, create_engine, Boolean, DateTime
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_scoped_session
 from datetime import datetime
-from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.ext.declarative import declarative_base
-from pydantic import BaseModel, constr
-from sqlalchemy.orm import column_property
+from sqlalchemy.orm import column_property, Session, sessionmaker, scoped_session
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import select, insert, update, delete
+from sqlalchemy.engine.result import ChunkedIteratorResult
+from typing import Union
 
 # engine = create_engine("mysql+pymysql://root:Root123!@localhost/tms")
-engine = create_async_engine("mysql+pymysql://root:Root123!@localhost/tms")
-Base = declarative_base(bind=engine)
+# Base = declarative_base(bind=engine)
+# s = sessionmaker(bind=engine)
 
-# Session = sessionmaker(bind=engine)
-Session = sessionmaker(engine, class_=AsyncSession)
-
-# class CompanyOrm(Base):
-#     __tablename__ = 'companies'
-#     id = Column(Integer, primary_key=True, nullable=False)
-#     public_key = Column(String(20), index=True, nullable=False, unique=True)
-#     name = Column(String(63), unique=True)
-#     # domains = Column(ARRAY(String(255)))
+async_engine = create_async_engine("mysql+aiomysql://root:Root123!@localhost/tms")
+Base = declarative_base(bind=async_engine)
+async_session = sessionmaker(async_engine, expire_on_commit=False, class_=AsyncSession)
 
 """
 Column()参数详解：
@@ -85,23 +80,58 @@ class TbUsers(Base):
     delete_time = Column("DELETE_TIME", DateTime, comment="删除时间")
 
 
-# com1 = CompanyOrm()
-# com1.public_key = "beijing"
-# com1.name = "beijing"
-#
-# session.add(com1)
-# session.commit()
+class AsyncUserCURD:
+    TbUsers = TbUsers
+
+    @staticmethod
+    async def add_user(user):
+        async with async_session() as session:
+            session: AsyncSession
+            async with session.begin():
+                session.add(user)
+            await session.commit()
+
+    @staticmethod
+    async def select_user():
+        async with async_session() as session:
+            sql = select(TbUsers).where(TbUsers.username == "beijingm")
+            result: ChunkedIteratorResult = await session.execute(sql)
+            user: TbUsers = result.scalars().first()
+            print(user)
+
+    @staticmethod
+    async def update_user():
+        async with async_session() as session:
+            session: AsyncSession
+            sql = update(TbUsers).where(TbUsers.username == "beijingm").values({TbUsers.nickname: "帅帅"})
+            async with session.begin():
+                await session.execute(sql)
+
+    @staticmethod
+    async def delete_user():
+        async with async_session() as session:
+            session: AsyncSession
+            sql = delete(TbUsers).where(TbUsers.username == "zhangsan")
+            async with session.begin():
+                await session.execute(sql)
+
 
 if __name__ == '__main__':
-    Base.metadata.create_all()
-    # user1 = TbUsers()
-    # user1.email = "58149278@qq.com"
-    # user1.province = "江苏省"
-    # user1.city = "南京市"
-    # user1.county = "溧水区"
-    #
-    # session.add(user1)
-    # session.commit()
+    import asyncio
 
-    # user: TbUsers = session.query(TbUsers).filter_by(email="58149278@qq.com").first()
-    # print(user.address)
+
+    # 异步创建表
+    async def create_all():
+        async with async_engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+
+        await async_engine.dispose()
+
+
+    user = TbUsers(username="zhangsan", password="root@123", user_id=100100101, custom_id=101, nickname="二狗",
+                   telephone="18651815401", email="68149278@qq.com")
+
+    asyncio.run(AsyncUserCURD.add_user(user))
+    asyncio.run(AsyncUserCURD.update_user())
+    asyncio.run(AsyncUserCURD.delete_user())
+    asyncio.run(AsyncUserCURD.select_user())
