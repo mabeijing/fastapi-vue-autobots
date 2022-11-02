@@ -2,7 +2,6 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.requests import Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -10,7 +9,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 # 处理请求头中`Accept-Encoding`包含`gzip`的请求
 from fastapi.middleware.gzip import GZipMiddleware
 
-from app.module_route.router import route
+from app.module_route import route, access
 
 from app import settings
 
@@ -46,6 +45,7 @@ app.mount("/static", StaticFiles(directory=settings.STATIC), name="static")
 app.mount("/public", StaticFiles(directory=settings.PUBLIC), name="pub")
 
 app.include_router(route)
+app.include_router(access)
 
 if __name__ == '__main__':
     import uvicorn

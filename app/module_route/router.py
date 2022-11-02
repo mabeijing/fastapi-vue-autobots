@@ -14,8 +14,6 @@ from pydantic import BaseModel
 from fastapi.templating import Jinja2Templates
 from app.utils import ROUTETag
 import datetime
-import asyncio
-import cv2
 
 route = APIRouter(prefix="/route")
 
@@ -47,10 +45,11 @@ def route_list(request: Request):
 @route.get("/home", tags=[ROUTETag.ADMIN], response_description="json响应", response_class=ORJSONResponse)
 def home():
     """
-    orjson 性能很高，并且支持python基本数据类型，datetime，time，数据类，Enum
+    orjson 性能很高，并且支持python基本数据类型，datetime，time，数据类，Enum, UUID，挺好的
     """
 
     data = [{
+        "id": uuid4(),
         "name": "beijingm",
         "bod": {
             "na": ["12", 23, datetime.datetime.now()],
@@ -116,10 +115,10 @@ def fake_video_streamer():
         yield from f
 
 
-
 @route.get("/video", tags=[ROUTETag.ADMIN], response_description="视频播放", response_class=StreamingResponse)
 async def video():
     """
     如果不加媒体类型，可能无法播放
+    这里仅仅做展示，真的流媒体，需要ffmeg来做了
     """
     return StreamingResponse(fake_video_streamer(), media_type='video/mp4')
