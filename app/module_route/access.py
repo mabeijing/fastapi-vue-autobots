@@ -41,6 +41,10 @@ class UserModelOut(OrmBaseModel):
     email: EmailStr
     role: int
     status: int
+    province: str = ""
+    city: str = ""
+    county: str = ""
+    address: str = ""
     address_detail: str = ""
 
     # validator可以接收当前类已存在的字段，作为校验字段
