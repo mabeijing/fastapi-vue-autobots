@@ -6,8 +6,8 @@ from sqlalchemy.orm import column_property, Session, sessionmaker, scoped_sessio
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import select, insert, update, delete
 from sqlalchemy.engine.result import ChunkedIteratorResult, Result
-from fastapi.exceptions import HTTPException
 from sqlalchemy import or_, and_
+from passlib.context import CryptContext
 
 from typing import TYPE_CHECKING
 
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 async_engine = create_async_engine("mysql+aiomysql://root:Root123!@localhost/tms", pool_size=100, pool_recycle=3600)
 Base = declarative_base(bind=async_engine)
 async_session = sessionmaker(async_engine, expire_on_commit=False, class_=AsyncSession)
-
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 """
 Column()参数详解：
 name 可以是第一个位置参数，也可以是任意的name=""
@@ -60,7 +60,7 @@ class TbUsers(Base):
     __tablename__ = "tb_user"
     id = Column("ID", Integer, primary_key=True, nullable=False, autoincrement=True, comment="主键ID")
     username = Column("USERNAME", String(50), nullable=False, unique=True, index=True, comment="用户名")
-    password = Column("PASSWORD", String(200), nullable=False, comment="用户密码")
+    _password = Column("PASSWORD", String(200), nullable=False, comment="用户密码")
     user_id = Column("USERID", BigInteger, nullable=False, unique=True, index=True, comment="用户ID")
     custom_id = Column("CUSTOM_ID", BigInteger, nullable=False, unique=True, index=True, comment="客户ID")
 
@@ -84,6 +84,19 @@ class TbUsers(Base):
     update_time = Column("UPDATE_TIME", DateTime, onupdate=datetime.now, comment="更新时间")
     delete_by = Column("DELETE_BY", String(32), comment="删除人")
     delete_time = Column("DELETE_TIME", DateTime, comment="删除时间")
+
+    @property
+    def password(self):
+        return None
+
+    @password.setter
+    def password(self, password: str):
+        self._password = pwd_context.hash(password)
+
+    def check_password(self, password: str) -> bool:
+        return pwd_context.verify(password, self._password)
+
+
 
 
 # class SyncUserCURD:
@@ -145,8 +158,6 @@ class AsyncUserCURD:
         async with async_session() as session:
             result: ChunkedIteratorResult = await session.execute(sql)
             _user: TbUsers = result.scalars().first()
-            if not _user:
-                raise HTTPException(status_code=404, detail="资源未找到")
             return _user
 
     @staticmethod
@@ -177,9 +188,10 @@ if __name__ == '__main__':
 
         await async_engine.dispose()
 
+
     asyncio.run(create_all())
 
-    user = TbUsers(username="lisa", password="root@123", user_id=100100102, custom_id=102, nickname="三妹",
+    user = TbUsers(username="lisa", user_id=100100102, custom_id=102, nickname="三妹",
                    telephone=18651815402, email="78149278@qq.com")
 
     # asyncio.run(AsyncUserCURD.add_user(user))

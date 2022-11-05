@@ -88,14 +88,17 @@ async def users():
 @access.get("/user/{user_id}", response_model=UserModelOut)
 async def user(user_id: int = Path(..., example=100100100)):
     sql = schema.select(schema.TbUsers).where(schema.TbUsers.user_id == user_id)
-    return await schema.AsyncUserCURD.select_user(sql)
+    user: schema.TbUsers = await schema.AsyncUserCURD.select_user(sql)
+    if not user:
+        raise HTTPException(status_code=404, detail={"msg": "用户ID不存在"})
+    return user
 
 
 @access.post("/user/add", response_model=UserModelOut)
 async def add_user(user: UserModelIn = Body()):
     exist_user: schema.TbUsers = await schema.AsyncUserCURD.select_user_by_model(user)
     if exist_user:
-        raise HTTPException(status_code=404, detail="234")
+        raise HTTPException(status_code=404, detail={"msg": "用户已存在"})
 
     u = user.dict()
     u.update({"user_id": int(time.time() * 10000000), "custom_id": int(time.time() * 10000000)})

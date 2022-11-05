@@ -4,3 +4,5 @@
 from .access import access
 from .router import route
 from .web_socket import socket
+
+from .auth import auth
