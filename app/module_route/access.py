@@ -2,13 +2,13 @@
 # Author: beijingm
 
 import time
+from typing import Optional
+from pydantic import BaseModel, BaseConfig, Field, EmailStr, validator, PositiveInt
+
+import orjson
 from fastapi import APIRouter, Path, Body
 from fastapi.exceptions import HTTPException
 from fastapi.responses import ORJSONResponse
-from fastapi import exception_handlers
-from pydantic import BaseModel, BaseConfig, Field, EmailStr, PrivateAttr, root_validator, validator
-import orjson
-from typing import Optional
 
 from app.module_route import schema
 
@@ -16,7 +16,7 @@ access = APIRouter(prefix="/access", default_response_class=ORJSONResponse)
 
 
 class OrmBaseModel(BaseModel):
-    class Config:
+    class Config(BaseConfig):
         orm_mode = True
         json_loads = orjson.loads
         json_dumps = orjson.dumps
@@ -32,12 +32,13 @@ class OrmBaseModel(BaseModel):
 
 
 class UserModelOut(OrmBaseModel):
-    username: str = Field(default="lisa", description="用户名", title="USERNAME")
-    user_id: int
+    # 注意，指定alise的时候，一定要和数据库字段保持一致，否则会导致实例化失败
+    username: str = Field(..., description="用户名", title="USERNAME", example="lisa")
+    user_id: int = Field(..., description="用户ID", title="USER_ID", example="")
     custom_id: int
     nickname: str = ""
     avatar: Optional[str] = Field(default="", description="用户头像", title="USERNAME")
-    telephone: int
+    telephone: PositiveInt
     email: EmailStr
     role: int
     status: int
@@ -58,12 +59,12 @@ class UserModelOut(OrmBaseModel):
 
 
 class UserModelIn(OrmBaseModel):
-    username: str = Field(..., description="用户名", title="USERNAME", example="lisa", repr=False)
-    password: str = Field(..., description="密码", title="PASSWORD", example="*****", repr=False)
+    username: str = Field(..., description="用户名", title="USERNAME", example="lisa")
+    password: str = Field(..., description="密码", title="PASSWORD", example="*****")
 
-    nickname: str = Field(default="小帅", description="用户昵称", title="NICKNAME", repr=False)
+    nickname: str = Field(default="", description="用户昵称", title="NICKNAME", example="小帅")
     avatar: str = ""
-    telephone: int
+    telephone: PositiveInt = Field(..., description="用户电话", title="TELEPHONE", example=18651815400)
     email: EmailStr
 
     province: str = ""
@@ -71,8 +72,11 @@ class UserModelIn(OrmBaseModel):
     county: str = ""
     address: str = ""
 
+    class Config(BaseConfig):
+        title = "UserModelIns"  # 可以嵌套定义，这个title用于在swagger上显示schema
 
-@access.get("/users", response_model=list[UserModelOut])
+
+@access.get("/users", response_model=list[UserModelOut], response_class=ORJSONResponse)
 async def users():
     return await schema.AsyncUserCURD.select_users()
 

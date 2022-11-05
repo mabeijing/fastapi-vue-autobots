@@ -5,13 +5,16 @@ from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import ORJSONResponse
 # 处理请求头中`Accept-Encoding`包含`gzip`的请求
 from fastapi.middleware.gzip import GZipMiddleware
 
-from app.module_route import route, access
+from app.module_route import route, access, socket
 
-from app import settings
+from app import settings, patch
+
+patch.patch_all()
 
 descriptions = """
 App API helps you do awesome stuff. 🚀
@@ -46,6 +49,16 @@ app.mount("/public", StaticFiles(directory=settings.PUBLIC), name="pub")
 
 app.include_router(route)
 app.include_router(access)
+app.include_router(socket)
+
+
+@app.exception_handler(RequestValidationError)
+async def error_handle(request, exc):
+    for error in exc.errors():
+        error: dict
+        error["loc"] = '->'.join(error["loc"])
+    return ORJSONResponse(content={"errors": exc.errors()}, status_code=422)
+
 
 if __name__ == '__main__':
     import uvicorn
