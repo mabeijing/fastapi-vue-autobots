@@ -14,10 +14,19 @@ from pydantic import BaseModel
 from fastapi.templating import Jinja2Templates
 from app.utils import ROUTETag
 import datetime
+from simpel_captcha import img_captcha
+import redis
 
 route = APIRouter(prefix="/route")
 
 logger = logging.getLogger()
+
+# 如果采用连接池，decode_responses=True一定要配置在连接池下，配置在实例不生效。
+# 如果不采用连接池，配置在redis.Redis(decode_responses=True)生效
+pool = redis.ConnectionPool(host="localhost", port=6379, db=10, password="root123", max_connections=20,
+                            decode_responses=True)
+
+connections = redis.Redis(connection_pool=pool)
 
 
 @route.get("/hello-world", description='你好世界', name='hello world', tags=[ROUTETag.DEMO],
@@ -75,6 +84,14 @@ async def readfile(image: bytes = File(...)):
     return PlainTextResponse(str(image_name.relative_to(settings.APP)))
 
 
+@route.get("/captcha")
+async def captcha():
+    image, text = img_captcha(byte_stream=True)
+    # todo 将验证码缓存到Redis中
+    print(text)
+    return StreamingResponse(content=image, media_type='image/jpeg')
+
+
 class UploadsModel(BaseModel):
     filename: str
     filetype: str
@@ -122,3 +139,9 @@ async def video():
     这里仅仅做展示，真的流媒体，需要ffmeg来做了
     """
     return StreamingResponse(fake_video_streamer(), media_type='video/mp4')
+
+
+if __name__ == '__main__':
+    connections.set("name", "beijingm", ex=60)
+    res = connections.get("name")
+    print(res)
