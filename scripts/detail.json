@@ -1,0 +1,171 @@
+{
+  "productID": 6465,
+  "releaseID": null,
+  "productType": 2,
+  "productName": "FULL-GITLAB",
+  "status": null,
+  "applicantID": 16,
+  "applicant": "beijingm",
+  "worldServerTMGroup": null,
+  "worldServerWorkFlow": null,
+  "description": "山地车山地车山地车山地车山地车",
+  "sourcePipeline": {
+    "pipelineID": 33452,
+    "pipelineIndex": 1,
+    "pipelineName": null,
+    "nodeData": [
+      [
+        {
+          "nodeID": 110423,
+          "nodeName": "parser",
+          "nodeType": "build-in",
+          "description": "cdscsdc",
+          "variables": "[{\"type\":\"parser-rule\",\"parser-type\":\"PROPERTIES\",\"path\":\"{\\\"name\\\": \\\"regex\\\", \\\"value\\\": \\\"^.*.properties$\\\"}\"},{\"type\":\"parser-rule\",\"parser-type\":\"JS_EXT\",\"path\":\"{\\\"name\\\":\\\"regex\\\",\\\"value\\\":\\\"^.*.js$\\\"}\"},{\"type\":\"parser-rule\",\"parser-type\":\"JSON_NONE_VSPEHRE\",\"path\":\"{\\\"name\\\":\\\"regex\\\",\\\"value\\\":\\\"^.*.json$\\\"}\"},{\"type\":\"parser-rule\",\"parser-type\":\"PSD1\",\"path\":\"{\\\"name\\\":\\\"regex\\\",\\\"value\\\":\\\"^.*.psd1$\\\"}\"}]",
+          "filesPattern": "",
+          "ruleID": "parser",
+          "pipLineType": null,
+          "nodeIndex": 0
+        }
+      ],
+      [
+        {
+          "nodeID": 110424,
+          "nodeName": "protect-file",
+          "nodeType": "build-in",
+          "description": "csdsd",
+          "variables": "[{\"type\":\"protect-file\",\"file-path-regex\":\"{\\\"name\\\":\\\"regex\\\",\\\"value\\\":\\\"[\\\\\\\\s\\\\\\\\S]*\\\"}\",\"key-regex\":\"[\\\\s\\\\S]*\",\"value-regex\":\"[\\\\s\\\\S]*\",\"protect-rules\":\"INLINE_TAG, VARIABLE_MARK_BRACH\"}]",
+          "filesPattern": "",
+          "ruleID": "protect-file",
+          "pipLineType": null,
+          "nodeIndex": 1
+        }
+      ],
+      [
+        {
+          "nodeID": 110425,
+          "nodeName": "sentence-break-file",
+          "nodeType": "build-in",
+          "description": "",
+          "variables": "[{\"type\":\"sentence-break-file\",\"file-path-regex\":\"{\\\"name\\\":\\\"regex\\\",\\\"value\\\":\\\"[\\\\\\\\s\\\\\\\\S]*\\\"}\",\"rule-type\":\"all-sentences\"}]",
+          "filesPattern": "",
+          "ruleID": "sentence-break-file",
+          "pipLineType": null,
+          "nodeIndex": 2
+        }
+      ],
+      [
+        {
+          "nodeID": 110426,
+          "nodeName": "node namesource-key-filter",
+          "nodeType": "build-in",
+          "description": "csd",
+          "variables": "[{\"key-regex\":\"dscsdcsd\",\"file-path-regex\":\"{\\\"name\\\":\\\"regex\\\",\\\"value\\\":\\\"[\\\\\\\\s\\\\\\\\S]*\\\"}\"},{\"key-regex\":\"\\\\\",\"file-path-regex\":\"{\\\"name\\\":\\\"regex\\\",\\\"value\\\":\\\"[\\\\\\\\s\\\\\\\\S]*\\\"}\"},{\"key-regex\":\"\\\\name\\\\\\\"\",\"file-path-regex\":\"{\\\"name\\\":\\\"regex\\\",\\\"value\\\":\\\"[\\\\\\\\s\\\\\\\\S]*\\\"}\"}]",
+          "filesPattern": "",
+          "ruleID": "source-key-filter",
+          "pipLineType": null,
+          "nodeIndex": 3
+        }
+      ]
+    ]
+  },
+  "translationPipeline": {
+    "pipelineID": 33453,
+    "pipelineIndex": 2,
+    "pipelineName": null,
+    "nodeData": [
+      [
+        {
+          "nodeID": 110427,
+          "nodeName": "replace-link-with-format",
+          "nodeType": "build-in",
+          "description": "csdcs",
+          "variables": "[{\"file-path-regex\":\"{\\\"name\\\":\\\"regex\\\",\\\"value\\\":\\\"[\\\\\\\\s\\\\\\\\S]*\\\"}\",\"key-regex\":\"sdcsd\",\"replace-value-regex\":\"\\\\sdc\\\\\",\"locale-mapping-type\":\"basic_locale\",\"format-type\":\"sdcs\"},{\"file-path-regex\":\"{\\\"name\\\":\\\"regex\\\",\\\"value\\\":\\\"[\\\\\\\\w\\\\\\\\W]*\\\"}\",\"key-regex\":\"sdcs235\",\"replace-value-regex\":\".*sd\",\"locale-mapping-type\":\"basic_locale_5\",\"format-type\":\"sdcccc\"}]",
+          "filesPattern": "",
+          "ruleID": "replace-link-with-format",
+          "pipLineType": null,
+          "nodeIndex": 0
+        }
+      ],
+      [
+        {
+          "nodeID": 110428,
+          "nodeName": "post-replace-block",
+          "nodeType": "build-in",
+          "description": "",
+          "variables": "[{\"type\":\"post-replace-block\",\"file-path-regex\":\"{\\\"name\\\":\\\"regex\\\",\\\"value\\\":\\\"[\\\\\\\\s\\\\\\\\S]*\\\"}\",\"key-regex\":\"[\\\\s\\\\S]*\",\"value-regex\":\"[\\\\s\\\\S]*\",\"block-regex\":\".*Shared labels used (en) locale in many (English) splaces\",\"locale-mapping-type\":\"wxl_locale\"}]",
+          "filesPattern": "",
+          "ruleID": "post-replace-block",
+          "pipLineType": null,
+          "nodeIndex": 1
+        }
+      ],
+      [
+        {
+          "nodeID": 110429,
+          "nodeName": "generated-target-file",
+          "nodeType": "build-in",
+          "description": "",
+          "variables": "[{\"type\":\"generated-target-file\"}]",
+          "filesPattern": "",
+          "ruleID": "generated-target-file",
+          "pipLineType": null,
+          "nodeIndex": 2
+        }
+      ],
+      [
+        {
+          "nodeID": 110430,
+          "nodeName": "encoding-converter",
+          "nodeType": "build-in",
+          "description": "",
+          "variables": "[{\"type\":\"encoding-converter\",\"encoding\":\"utf-8\",\"file-path-regex\":\"{\\\"name\\\":\\\"regex\\\",\\\"value\\\":\\\"[\\\\\\\\s\\\\\\\\S]*\\\"}\"}]",
+          "filesPattern": "",
+          "ruleID": "encoding-converter",
+          "pipLineType": null,
+          "nodeIndex": 3
+        }
+      ],
+      [
+        {
+          "nodeID": 110431,
+          "nodeName": "trans-duplicate-value-validator",
+          "nodeType": "build-in",
+          "description": "trans-duplicate-value-validator",
+          "variables": "[{\"type\":\"trans-duplicate-value-validator\"}]",
+          "filesPattern": "",
+          "ruleID": "trans-duplicate-value-validator",
+          "pipLineType": null,
+          "nodeIndex": 4
+        },
+        {
+          "nodeID": 110432,
+          "nodeName": "unicode-character-valid-validator",
+          "nodeType": "build-in",
+          "description": "",
+          "variables": "[{\"type\":\"unicode-character-valid-validator\"}]",
+          "filesPattern": "",
+          "ruleID": "unicode-character-valid-validator",
+          "pipLineType": null,
+          "nodeIndex": 4
+        },
+        {
+          "nodeID": 110433,
+          "nodeName": "file-validator",
+          "nodeType": "build-in",
+          "description": "",
+          "variables": "[{\"type\":\"file-validator\"}]",
+          "filesPattern": "",
+          "ruleID": "file-validator",
+          "pipLineType": null,
+          "nodeIndex": 4
+        }
+      ]
+    ]
+  },
+  "updatedTime": "1668160236348",
+  "createTime": "1668160236348",
+  "data": "{\"repoUrl\":\"https://gitlab.eng.vmware.com/gcc-test/gcc-translation\",\"l10nDefinitionFilePath\":\"dtest.l10n\",\"branch\":\"autoNew_a\"}",
+  "reviewers": null,
+  "reviewScope": null,
+  "commitMsg": null
+}

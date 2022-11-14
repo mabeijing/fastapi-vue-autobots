@@ -17,6 +17,7 @@ from starlette_session import SessionMiddleware
 from starlette_session.backends import BackendType
 
 from app.module_route import route, access, socket, auth
+from app.scaffold.schema import api
 
 from app import settings, patch
 
@@ -69,6 +70,7 @@ app.include_router(route)
 app.include_router(access)
 app.include_router(socket)
 app.include_router(auth)
+app.include_router(api)
 
 if __name__ == '__main__':
     import uvicorn
