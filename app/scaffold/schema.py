@@ -4,7 +4,7 @@ import requests
 from enum import Enum
 from pydantic import BaseModel, Field, HttpUrl
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Body
 
 api = APIRouter(prefix="/api")
 
@@ -29,6 +29,28 @@ class RequestIn(BaseModel):
 
 @api.post("/request")
 def do_request(
-        request: RequestIn
+        request: RequestIn = Body()
 ):
-    return "hello"
+    return request
+
+
+"""
+docker run -d --name mongodb --restart always --net=yapi -p 2717:27017 -v /mongo/data:/data/db -e MONGO_INITDB_DATABASE=yapi -e MONGO_INITDB_ROOT_USERNAME=yapipro -e MONGO_INITDB_ROOT_PASSWORD=yapipro1024 mongo:4.2.21
+
+
+
+db.createUser({
+  user: 'yapi',
+  pwd: 'yapi123456',
+  roles: [
+ { role: "dbAdmin", db: "yapi" },
+ { role: "readWrite", db: "yapi" }
+  ]
+});
+
+
+ docker run -d --rm --name yapi-init --link mongodb:mongo --net=yapi -v /home/ubuntu/docker/mongo/conf/config.json:/yapi/config.json yapipro/yapi:1.9.5 server/install.js
+ 
+  
+docker run -d --name yapi --link mongodb:mongo --restart always --net=yapi -p 3000:3000 -v /home/ubuntu/docker/mongo/conf/config.json:/yapi/config.json yapipro/yapi:1.9.5 server/app.js
+"""
