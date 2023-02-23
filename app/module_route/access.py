@@ -15,16 +15,20 @@ from app.module_route import schema
 access = APIRouter(prefix="/access", default_response_class=ORJSONResponse)
 
 
+def orjson_dumps(v, *, default):
+    return orjson.dumps(v, default=default).decode()
+
+
 class OrmBaseModel(BaseModel):
     class Config(BaseConfig):
+        fields = {"value": {"exclude": True}}
         orm_mode = True
         json_loads = orjson.loads
-        json_dumps = orjson.dumps
+        json_dumps = orjson_dumps
 
     # # 超高端操作，全局验证其。value是每一条UserModelOut数据。
     # @root_validator
     # def validate_value(cls, value: dict):
-    #     # {'username': 'beijingm', 'user_id': 100100100, 'custom_id': 100, 'nickname': '大帅', 'avatar': None, 'telephone': '18651815400', 'email': '58149279@qq.com'}
     #     if value == "":
     #         return None
     #     else:
@@ -88,10 +92,10 @@ async def users():
 @access.get("/user/{user_id}", response_model=UserModelOut)
 async def user(user_id: int = Path(..., example=100100100)):
     sql = schema.select(schema.TbUsers).where(schema.TbUsers.user_id == user_id)
-    user: schema.TbUsers = await schema.AsyncUserCURD.select_user(sql)
-    if not user:
+    _user: schema.TbUsers = await schema.AsyncUserCURD.select_user(sql)
+    if not _user:
         raise HTTPException(status_code=404, detail={"msg": "用户ID不存在"})
-    return user
+    return _user
 
 
 @access.post("/user/add", response_model=UserModelOut)
@@ -105,3 +109,4 @@ async def add_user(user: UserModelIn = Body()):
     tb_user = schema.TbUsers(**u)
     _user: schema.TbUsers = await schema.AsyncUserCURD.add_user(tb_user)
     return _user
+

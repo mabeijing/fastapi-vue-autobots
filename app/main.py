@@ -1,25 +1,20 @@
 # 主文件入口
-from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
-
-import aioredis
-
 import redis
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
 # 处理请求头中`Accept-Encoding`包含`gzip`的请求
 from fastapi.middleware.gzip import GZipMiddleware
-from module_route.error_handles import ExceptionHandles
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
 from starlette_session import SessionMiddleware
 from starlette_session.backends import BackendType
 
+from app import settings, patch
 from app.module_route import route, access, socket, auth
 from app.scaffold.schema import api
-
-from app import settings, patch
+from module_route.error_handles import ExceptionHandles
 
 patch.patch_all()
 
@@ -28,7 +23,7 @@ App API helps you do awesome stuff. 🚀
 """
 
 # redis_client = aioredis.from_url("redis://localhost/10", password="root123")
-redis_client = redis.Redis(host="127.0.0.1", password="root123")
+redis_client = redis.Redis(host="127.0.0.1", password="root@123")
 app = FastAPI(title='fastapi-vue-autobots', description=descriptions, version='v0.0.1')
 exception = ExceptionHandles()
 exception.init_app(app)

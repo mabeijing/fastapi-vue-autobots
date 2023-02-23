@@ -18,7 +18,6 @@ from fastapi import Path, Query, Body, File, Form, UploadFile, Cookie, Header
 
 from pydantic import BaseModel
 
-
 req_base = APIRouter(prefix="/req_base")
 
 
@@ -90,4 +89,4 @@ def product_new(product_id: float, product: Product, q: bool = False):
     """
     混合参数场景
     """
-    return {"product_id": product_id, "product":product, "q": q}
+    return {"product_id": product_id, "product": product, "q": q}

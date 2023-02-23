@@ -19,13 +19,12 @@ from fastapi import APIRouter, Body, Path, Request, params, Response, Depends, W
 # from fastapi.responses import RedirectResponse    用于重定向路由
 # from fastapi.responses import StreamingResponse   用于异步生成器/迭代器，流式传输响应主体。注意，这个插件也可以异步读取文件，异步读取文件库aiofile
 # from fastapi.responses import FileResponse  这个支持异步传输文件作为响应
-from fastapi.templating import Jinja2Templates    # 需要安装jinja2, 配合HTMLResponse使用
+from fastapi.templating import Jinja2Templates  # 需要安装jinja2, 配合HTMLResponse使用
 
 from starlette.responses import JSONResponse
 from fastapi.responses import ORJSONResponse, HTMLResponse
 
 templates = Jinja2Templates(directory="templates")
-
 
 demo = APIRouter()
 
@@ -90,7 +89,6 @@ def order(order_id: str, user: dict[str, User], delete: bool, product_type: Prod
 
 @demo.get("/usrs/self", tags=['测试用例'], summary='查询当前用户')
 async def user_self():
-
     return HTMLResponse(content="ORJSONResponse", status_code=404, media_type="text/html")
 
 
@@ -101,7 +99,7 @@ def home(request: Request):
 
 @demo.get("/users/{user_id}")
 async def user_by_id(
-    user_id: str = Path(max_length=10, deprecated=True)
+        user_id: str = Path(max_length=10, deprecated=True)
 ):
     """
     路径参数。\n
@@ -195,12 +193,14 @@ def welcome():
 
 demo.get("/", response_class=HTMLResponse)(welcome)
 
+
 @demo.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     while True:
         data = await websocket.receive_text()
         await websocket.send_text(f"Message text was: {data}")
+
 
 class FixedContentQueryChecker:
     def __init__(self, fixed_content: str):
@@ -219,6 +219,3 @@ checker = FixedContentQueryChecker("bar")
 @demo.get("/query-checker/")
 async def read_query_check(fixed_content_included: bool = Depends(checker)):
     return {"fixed_content_in_query": fixed_content_included}
-
-
-

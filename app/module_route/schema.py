@@ -97,8 +97,6 @@ class TbUsers(Base):
         return pwd_context.verify(password, self._password)
 
 
-
-
 # class SyncUserCURD:
 #     TbUsers = TbUsers
 #
