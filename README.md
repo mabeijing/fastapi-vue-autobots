@@ -8,3 +8,10 @@ models.py used for ORM
 views.py used for view
 
 serialize.py used parameters validate
+
+
+安装包
+```requirements.txt
+pip install python-jose[cryptography]
+pip install uvicorn[standard]
+```
