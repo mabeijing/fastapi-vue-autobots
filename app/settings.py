@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
-TEMPLATES = os.path.join(ROOT_DIR, "app", "templates")
+TEMPLATES = os.path.join(ROOT_DIR, "app", "admin/templates")
 
 APP = os.path.join(ROOT_DIR, "app")
 

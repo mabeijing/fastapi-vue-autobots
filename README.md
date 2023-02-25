@@ -14,4 +14,7 @@ serialize.py used parameters validate
 ```requirements.txt
 pip install python-jose[cryptography]
 pip install uvicorn[standard]
+
+如果是linux
+可以安装pip install uvloop
 ```

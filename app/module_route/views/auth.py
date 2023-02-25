@@ -3,7 +3,7 @@
 from typing import Optional
 from datetime import datetime, timedelta
 
-from fastapi import APIRouter, Form, Depends, Path, status
+from fastapi import APIRouter, Form, Depends, Path
 from fastapi.requests import Request
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from fastapi.responses import ORJSONResponse
@@ -11,7 +11,7 @@ from fastapi.exceptions import HTTPException
 from jose import JWTError, jwt
 
 from app.module_route import schema
-from .access import UserModelOut
+from app.module_route.views.access import UserModelOut
 from app import settings
 
 # 主要用来做权限认证
