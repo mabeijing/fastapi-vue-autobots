@@ -1,6 +1,3 @@
-# @Time 2022/11/1 13:22
-# Author: beijingm
-
 from fastapi import APIRouter, UploadFile, File
 from fastapi.responses import PlainTextResponse, HTMLResponse, ORJSONResponse, FileResponse, StreamingResponse
 from fastapi.requests import Request
@@ -8,11 +5,11 @@ from fastapi.requests import Request
 import logging
 from uuid import uuid4
 import aiofiles
-from app import settings
+from autobots import settings
 from pydantic import BaseModel
 
 from fastapi.templating import Jinja2Templates
-from app.utils import ROUTETag
+
 import datetime
 from simpel_captcha import img_captcha
 import redis
@@ -29,7 +26,7 @@ pool = redis.ConnectionPool(host="localhost", port=6379, db=10, password="root12
 connections = redis.Redis(connection_pool=pool)
 
 
-@route.get("/hello-world", description='你好世界', name='hello world', tags=[ROUTETag.DEMO],
+@route.get("/hello-world", description='你好世界', name='hello world',
            response_description='字节文本', response_class=PlainTextResponse, response_model=bytes)
 def route_list():
     """
@@ -39,7 +36,7 @@ def route_list():
     return PlainTextResponse(content=content, status_code=200)
 
 
-@route.get("/welcome", description="首页", name="welcome", tags=[ROUTETag.ADMIN], response_description="html响应",
+@route.get("/welcome", description="首页", name="welcome", response_description="html响应",
            response_class=HTMLResponse)
 def route_list(request: Request):
     """
@@ -51,7 +48,7 @@ def route_list(request: Request):
     return template.TemplateResponse("welcome.html", context={"request": request, "information": "welcome!"})
 
 
-@route.get("/home", tags=[ROUTETag.ADMIN], response_description="json响应", response_class=ORJSONResponse)
+@route.get("/home", response_description="json响应", response_class=ORJSONResponse)
 def home():
     """
     orjson 性能很高，并且支持python基本数据类型，datetime，time，数据类，Enum, UUID，挺好的
@@ -61,14 +58,13 @@ def home():
         "id": uuid4(),
         "name": "beijingm",
         "bod": {
-            "na": ["12", 23, datetime.datetime.now()],
-            "use": ROUTETag.ADMIN
+            "na": ["12", 23, datetime.datetime.now()]
         }
     }]
     return ORJSONResponse(content=data)
 
 
-@route.post("/avatar", tags=[ROUTETag.ADMIN], response_description="头像上传(小)", response_class=PlainTextResponse)
+@route.post("/avatar", response_description="头像上传(小)", response_class=PlainTextResponse)
 async def readfile(image: bytes = File(...)):
     """
     图片文件二进制流写入本地文件。因为会用内存接收文件字节流，所以不能传大文件。
@@ -97,7 +93,7 @@ class UploadsModel(BaseModel):
     filetype: str
 
 
-@route.post("/uploads", tags=[ROUTETag.ADMIN],
+@route.post("/uploads", 
             response_description="批量上传大文件", response_model=list[UploadsModel])
 async def uploads(files: list[UploadFile] = File(...)):
     """
@@ -116,7 +112,7 @@ async def uploads(files: list[UploadFile] = File(...)):
     return response
 
 
-@route.get("/download/{file}", tags=[ROUTETag.ADMIN], response_description="上传指定文件",
+@route.get("/download/{file}",response_description="上传指定文件",
            response_class=FileResponse)
 async def download(file: str):
     """
@@ -132,7 +128,7 @@ def fake_video_streamer():
         yield from f
 
 
-@route.get("/video", tags=[ROUTETag.ADMIN], response_description="视频播放", response_class=StreamingResponse)
+@route.get("/video",  response_description="视频播放", response_class=StreamingResponse)
 async def video():
     """
     如果不加媒体类型，可能无法播放
@@ -140,8 +136,3 @@ async def video():
     """
     return StreamingResponse(fake_video_streamer(), media_type='video/mp4')
 
-
-if __name__ == '__main__':
-    connections.set("name", "beijingm", ex=60)
-    res = connections.get("name")
-    print(res)

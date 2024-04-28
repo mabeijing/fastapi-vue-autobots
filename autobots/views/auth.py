@@ -10,9 +10,9 @@ from fastapi.responses import ORJSONResponse
 from fastapi.exceptions import HTTPException
 from jose import JWTError, jwt
 
-from app.module_route import schema
-from app.module_route.views.access import UserModelOut
-from app import settings
+import models as schema
+from views.access import UserModelOut
+from autobots import settings
 
 # 主要用来做权限认证
 auth = APIRouter(prefix="/auth")

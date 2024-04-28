@@ -1,5 +1,3 @@
-# @Time 2022/11/4 17:16
-# Author: beijingm
 from fastapi import APIRouter, WebSocket
 from fastapi.responses import HTMLResponse
 

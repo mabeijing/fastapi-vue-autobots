@@ -10,7 +10,7 @@ from fastapi import APIRouter, Path, Body
 from fastapi.exceptions import HTTPException
 from fastapi.responses import ORJSONResponse
 
-from app.module_route import schema
+from autobots import models as schema
 
 access = APIRouter(prefix="/access", default_response_class=ORJSONResponse)
 

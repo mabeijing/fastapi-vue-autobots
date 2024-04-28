@@ -11,18 +11,16 @@ from fastapi.templating import Jinja2Templates
 from starlette_session import SessionMiddleware
 from starlette_session.backends import BackendType
 
-from app import settings, patch
-from app.module_route import route, access, socket, auth
-from app.scaffold.schema import api
-from module_route.error_handles import ExceptionHandles
+from autobots import settings
+from autobots.views import route, access, socket, auth
+from autobots.exceptions import ExceptionHandles
 
-patch.patch_all()
+# patch.patch_all()
 
 descriptions = """
 App API helps you do awesome stuff. 🚀
 """
 
-# redis_client = aioredis.from_url("redis://localhost/10", password="root123")
 redis_client = redis.Redis(host="127.0.0.1", password="root@123")
 app = FastAPI(title='fastapi-vue-autobots', description=descriptions, version='v0.0.1')
 exception = ExceptionHandles()
@@ -56,7 +54,6 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 # app.mount可以挂在多个静态目录。
 # 第一个位置参数：路由。 http://localhost:8000/static
 # 第二个是挂在的实际路径，是脚本执行的目录作为相对目录。区别win和mac，最好的就是通过settings定位到根目录
-# 第三个参数name，尚未搞清楚。
 
 app.mount("/static", StaticFiles(directory=settings.STATIC), name="static")
 app.mount("/public", StaticFiles(directory=settings.PUBLIC), name="pub")
@@ -65,9 +62,4 @@ app.include_router(route)
 app.include_router(access)
 app.include_router(socket)
 app.include_router(auth)
-app.include_router(api)
 
-if __name__ == '__main__':
-    import uvicorn
-
-    uvicorn.run(app="app.main:app", host="192.168.0.142", port=8000, reload=True)
