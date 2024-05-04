@@ -21,9 +21,9 @@ uvloop  == 0.19.0; sys_platform != "win32"
 passlib == 1.7.4
 bcrypt == 4.1.2
 websockets == 12.0
-pyyaml == 6.0.1
+PyYAML == 6.0.1
 orjson == 3.10.1
 openpyxl == 3.1.2
 requests == 2.31.0
 starlette-session == 0.4.3
-simpel_captcha == 0.1.4
+simpel-captcha == 0.1.4
