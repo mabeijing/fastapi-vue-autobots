@@ -10,7 +10,7 @@ __pycache__/
 # ide
 .idea
 .venv
-
+venv
 
 # Distribution / packaging
 .Python
