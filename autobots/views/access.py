@@ -3,7 +3,7 @@
 
 import time
 from typing import Optional
-from pydantic import BaseModel, BaseConfig, Field, EmailStr, validator, PositiveInt
+from pydantic import BaseModel, ConfigDict, Field, EmailStr, validator, PositiveInt
 
 import orjson
 from fastapi import APIRouter, Path, Body
@@ -20,7 +20,7 @@ def orjson_dumps(v, *, default):
 
 
 class OrmBaseModel(BaseModel):
-    class Config(BaseConfig):
+    class Config(ConfigDict):
         fields = {"value": {"exclude": True}}
         orm_mode = True
         json_loads = orjson.loads
